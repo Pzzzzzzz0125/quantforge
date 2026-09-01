@@ -304,3 +304,42 @@ The first SPEC-001 validation used Python 3.14.3 because Python 3.12 was not ava
 ### Impact
 
 The foundation's tests, Ruff checks, formatting checks, and strict mypy checks have now passed locally on the declared Python 3.12 target in addition to the newer interpreter.
+
+---
+
+## DECISION-004 — Represent Canonical Market Bars with a Frozen Slotted Dataclass
+
+Date: 2026-08-31
+Status: Accepted
+Related Spec: SPEC-002
+
+### Context
+
+QuantForge needs one typed OHLCV representation that cannot leak provider or storage details into downstream systems.
+
+### Options Considered
+
+1. Use mutable dictionaries.
+2. Add a validation framework such as Pydantic.
+3. Use a frozen, slotted standard-library dataclass with explicit validation.
+
+### Decision
+
+Expose `quantforge.domain.Bar` as `@dataclass(frozen=True, slots=True)`. Normalize symbols during construction and explicitly distinguish incorrect fundamental types from invalid domain values.
+
+### Reasoning
+
+The dataclass provides the specified immutability, equality, hashing, type annotations, and low object overhead without adding a runtime dependency. Explicit construction-time validation keeps the canonical boundary deterministic and rejects invalid data before it reaches later systems.
+
+### Consequences
+
+Positive:
+
+* Providers and storage implementations can target one small canonical type.
+* Valid bars are immutable, hashable, and deterministic.
+* Runtime dependencies remain empty.
+
+Negative:
+
+* Prices use binary floating-point as approved by SPEC-002.
+* Bar frequency, serialization, adjusted values, and exchange-session semantics remain intentionally unspecified.
