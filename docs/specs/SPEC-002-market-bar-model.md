@@ -412,6 +412,7 @@ Tests must consider at least:
 * empty symbol;
 * whitespace-only symbol;
 * naive datetime;
+* datetime with non-`None` `tzinfo` whose `utcoffset()` is `None`;
 * timezone-aware datetime;
 * zero price;
 * negative price;
@@ -477,6 +478,7 @@ Test invalid construction with:
 
 * empty symbol;
 * naive timestamp;
+* timestamp with non-`None` `tzinfo` but no UTC offset;
 * each non-finite price;
 * zero price;
 * negative price;
@@ -671,11 +673,11 @@ Files modified:
 
 Tests added:
 
-* 59 deterministic `Bar` test cases covering the public fields, construction, normalization, types, domain invariants, boundary equality, immutability, equality, hashing, dictionary keys, and set membership.
+* 60 deterministic `Bar` test cases covering the public fields, construction, normalization, timezone-awareness semantics, types, domain invariants, boundary equality, immutability, equality, hashing, dictionary keys, and set membership.
 
 Commands run:
 
-* `python -m pytest` — 63 passed.
+* `python -m pytest` — 64 passed.
 * `python -m ruff check .` — passed.
 * `python -m ruff format --check .` — passed.
 * `python -m mypy src tests` — passed in strict mode.
