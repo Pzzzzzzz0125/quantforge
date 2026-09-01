@@ -1,7 +1,7 @@
 """Tests for the canonical market bar domain object."""
 
 from dataclasses import FrozenInstanceError, fields, replace
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone, tzinfo
 from math import inf, nan
 
 import pytest
@@ -10,6 +10,17 @@ from quantforge.domain import Bar
 
 BAR_TIMESTAMP = datetime(2026, 8, 31, tzinfo=UTC)
 PRICE_FIELDS = ("open", "high", "low", "close")
+
+
+class _NoOffsetTimezone(tzinfo):
+    def utcoffset(self, dt: datetime | None) -> None:
+        return None
+
+    def dst(self, dt: datetime | None) -> None:
+        return None
+
+    def tzname(self, dt: datetime | None) -> str:
+        return "NO_OFFSET"
 
 
 def make_bar(
@@ -95,6 +106,15 @@ def test_bar_preserves_timezone_aware_timestamp() -> None:
 def test_bar_rejects_naive_timestamp() -> None:
     with pytest.raises(ValueError, match="timestamp must be timezone-aware"):
         make_bar(timestamp=datetime(2026, 8, 31))
+
+
+def test_bar_rejects_timestamp_whose_timezone_has_no_utc_offset() -> None:
+    timestamp = datetime(2026, 8, 31, tzinfo=_NoOffsetTimezone())
+
+    assert timestamp.tzinfo is not None
+    assert timestamp.utcoffset() is None
+    with pytest.raises(ValueError, match="timestamp must be timezone-aware"):
+        make_bar(timestamp=timestamp)
 
 
 def test_bar_rejects_non_datetime_timestamp() -> None:
