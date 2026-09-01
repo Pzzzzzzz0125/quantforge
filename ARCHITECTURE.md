@@ -221,6 +221,8 @@ SPEC-003 established `quantforge.data.csv.CSVMarketDataProvider` as the first co
 
 SPEC-004 established `quantforge.data.validation` as a diagnostic dataset-validation layer. It consumes canonical bars in one pass, reports duplicate `(symbol, timestamp)` observations and per-symbol ordering violations through immutable structured reports, and never sorts, repairs, or removes input observations.
 
-The repository currently has no runtime dependencies. No external provider, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
+SPEC-005 established `quantforge.data.parquet.ParquetMarketDataStore` as the canonical local persistence adapter for market bars. It uses one centrally defined, versioned Arrow schema; normalizes timestamps to UTC; writes and reads in bounded batches; validates schema compatibility before reads; and publishes writes atomically with explicit overwrite control. Storage remains separate from dataset validation.
+
+PyArrow is the repository's only runtime dependency. No external provider, dataset catalog, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.

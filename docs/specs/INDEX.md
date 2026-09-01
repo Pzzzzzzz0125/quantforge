@@ -17,7 +17,7 @@
 | [SPEC-002](SPEC-002-market-bar-model.md) | Canonical Market Bar Model | Completed | SPEC-001 |
 | [SPEC-003](SPEC-003-csv-market-data-provider.md) | CSV Market Data Provider | Completed | SPEC-002 |
 | [SPEC-004](SPEC-004-market-data-validation.md) | Market Data Validation | Completed | SPEC-002, SPEC-003 |
-| SPEC-005 | Parquet Storage Layer | Planned | SPEC-003, SPEC-004 |
+| [SPEC-005](SPEC-005-parquet-storage-layer.md) | Parquet Storage Layer | Completed | SPEC-003, SPEC-004 |
 | SPEC-006 | Dataset Catalog | Planned | SPEC-005 |
 | SPEC-007 | Feature Interface | Planned | SPEC-005 |
 | SPEC-008 | Feature Registry & Cache | Planned | SPEC-007 |

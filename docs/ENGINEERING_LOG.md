@@ -476,3 +476,51 @@ and update the maximum only when a later timestamp is observed.
 ### Related Commit
 
 TBD
+
+---
+
+## DECISION-007 — Use a Versioned PyArrow Schema with UTC Parquet Persistence
+
+Date: 2026-09-01
+Status: Accepted
+Related Spec: SPEC-005
+
+### Context
+
+QuantForge needs typed, efficient local persistence for canonical bars while preserving the
+domain boundary, supporting streamed inputs, and avoiding a dataframe or database dependency.
+
+### Options Considered
+
+1. Continue using CSV as the primary research storage format.
+2. Add Pandas alongside a Parquet engine.
+3. Use PyArrow directly with one canonical, versioned Arrow schema.
+
+### Decision
+
+Pin PyArrow 25.0.1 as the sole runtime dependency for SPEC-005. Persist market bars with a
+centrally defined schema containing non-null string, `timestamp[us, UTC]`, float64, and int64
+fields plus explicit schema-version metadata. Normalize timestamps to UTC, process records in
+bounded batches, and publish same-directory temporary files through atomic replacement.
+
+### Reasoning
+
+Direct PyArrow use provides native typed Parquet reads and writes without introducing Pandas,
+Polars, or DuckDB. A versioned schema prevents silent coercion, UTC normalization gives one stable
+storage representation for timestamp instants, and atomic publication protects research datasets
+from partial writes.
+
+### Consequences
+
+Positive:
+
+* Persisted market-bar files have explicit types and compatibility metadata.
+* One-pass CSV and generator inputs can be stored without whole-dataset materialization.
+* Readers reconstruct the existing `Bar` domain type rather than exposing Arrow records.
+* Existing files are protected unless overwrite is explicitly requested.
+
+Negative:
+
+* PyArrow is a substantial binary runtime dependency that requires deliberate version updates.
+* Original timezone names and offsets are intentionally normalized to UTC.
+* SPEC-005 supports one local file only; partitioning and dataset cataloging remain unimplemented.
