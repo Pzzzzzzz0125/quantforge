@@ -217,6 +217,8 @@ SPEC-001 established the Python 3.12 `src/` package, test/lint/type-check toolch
 
 SPEC-002 established `quantforge.domain.Bar` as the immutable, provider- and storage-independent canonical boundary for one timezone-aware OHLCV observation. It validates symbol, timestamp, price, volume, and OHLC invariants at construction.
 
-The repository currently has no runtime dependencies. No provider, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
+SPEC-003 established `quantforge.data.csv.CSVMarketDataProvider` as the first concrete ingestion adapter. It streams canonical CSV rows in file order, performs structural and textual parsing, and delegates financial/domain validation to `Bar`. No generic provider protocol has been introduced.
+
+The repository currently has no runtime dependencies. No external provider, dataset-level validator, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.

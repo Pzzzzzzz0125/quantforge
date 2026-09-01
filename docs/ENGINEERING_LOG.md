@@ -343,3 +343,43 @@ Negative:
 
 * Prices use binary floating-point as approved by SPEC-002.
 * Bar frequency, serialization, adjusted values, and exchange-session semantics remain intentionally unspecified.
+
+---
+
+## DECISION-005 — Keep CSV Parsing Separate from Bar Domain Validation
+
+Date: 2026-09-01
+Status: Accepted
+Related Spec: SPEC-003
+
+### Context
+
+The first file-based market-data adapter must parse CSV input without duplicating canonical financial rules or requiring whole-dataset memory.
+
+### Options Considered
+
+1. Load complete files with a dataframe dependency.
+2. Parse CSV rows and duplicate OHLCV validation in the provider.
+3. Stream rows with the standard library, convert textual types, and construct the existing canonical `Bar`.
+
+### Decision
+
+Implement `quantforge.data.csv.CSVMarketDataProvider` with the standard-library CSV reader and generator-based iteration. The provider validates headers, converts text to `datetime`, `float`, and `int`, adds CSV line context, and delegates all bar-level domain validation to `Bar`.
+
+### Reasoning
+
+This maintains one owner for financial invariants, preserves exception causes and row provenance during failures, avoids a runtime dependency, and permits consumers to process large files incrementally.
+
+### Consequences
+
+Positive:
+
+* CSV rows cannot bypass the canonical `Bar` boundary.
+* Row order and duplicates are preserved exactly.
+* File access and parsing remain lazy and network-independent.
+
+Negative:
+
+* Only the canonical lowercase CSV schema is supported.
+* Cross-row validation, sorting, deduplication, and repair are intentionally unavailable.
+* No generic provider interface exists until requirements from another provider are known.
