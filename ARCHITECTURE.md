@@ -219,6 +219,8 @@ SPEC-002 established `quantforge.domain.Bar` as the immutable, provider- and sto
 
 SPEC-003 established `quantforge.data.csv.CSVMarketDataProvider` as the first concrete ingestion adapter. It streams canonical CSV rows in file order, performs structural and textual parsing, and delegates financial/domain validation to `Bar`. No generic provider protocol has been introduced.
 
-The repository currently has no runtime dependencies. No external provider, dataset-level validator, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
+SPEC-004 established `quantforge.data.validation` as a diagnostic dataset-validation layer. It consumes canonical bars in one pass, reports duplicate `(symbol, timestamp)` observations and per-symbol ordering violations through immutable structured reports, and never sorts, repairs, or removes input observations.
+
+The repository currently has no runtime dependencies. No external provider, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.
