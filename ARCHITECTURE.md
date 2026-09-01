@@ -215,6 +215,8 @@ These technologies should not be introduced until required by an approved specif
 
 SPEC-001 established the Python 3.12 `src/` package, test/lint/type-check toolchain, CI, and standard-library structured logging.
 
-The repository currently has no runtime dependencies and no implemented financial subsystem.
+SPEC-002 established `quantforge.domain.Bar` as the immutable, provider- and storage-independent canonical boundary for one timezone-aware OHLCV observation. It validates symbol, timestamp, price, volume, and OHLC invariants at construction.
+
+The repository currently has no runtime dependencies. No provider, storage, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.

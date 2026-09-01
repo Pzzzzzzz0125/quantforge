@@ -14,7 +14,7 @@
 | ID | Title | Status | Depends On |
 | --- | --- | --- | --- |
 | [SPEC-001](SPEC-001-repository-foundation.md) | Repository Foundation | Completed | — |
-| SPEC-002 | Canonical Market Bar Model | Planned | SPEC-001 |
+| [SPEC-002](SPEC-002-market-bar-model.md) | Canonical Market Bar Model | Completed | SPEC-001 |
 | SPEC-003 | CSV Market Data Provider | Planned | SPEC-002 |
 | SPEC-004 | Market Data Validation | Planned | SPEC-002 |
 | SPEC-005 | Parquet Storage Layer | Planned | SPEC-003, SPEC-004 |
