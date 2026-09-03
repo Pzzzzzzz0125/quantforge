@@ -223,6 +223,8 @@ SPEC-004 established `quantforge.data.validation` as a diagnostic dataset-valida
 
 SPEC-005 established `quantforge.data.parquet.ParquetMarketDataStore` as the canonical local persistence adapter for market bars. It uses one centrally defined, versioned Arrow schema; normalizes timestamps to UTC; writes and reads in bounded batches; validates schema compatibility before reads; and publishes writes atomically with explicit overwrite control. Storage remains separate from dataset validation.
 
-PyArrow is the repository's only runtime dependency. No external provider, dataset catalog, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
+SPEC-006 established `quantforge.data.catalog.DatasetCatalog` as the local reproducibility index for Parquet artifacts. It assigns path-independent dataset IDs, stores immutable provenance and streaming summary metadata, persists portable catalog-relative paths, fingerprints exact artifact bytes, verifies integrity drift, and publishes versioned UTF-8 JSON atomically. Catalog registration does not imply dataset-quality approval.
+
+PyArrow remains the repository's only runtime dependency. No external provider, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.

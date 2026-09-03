@@ -524,3 +524,53 @@ Negative:
 * PyArrow is a substantial binary runtime dependency that requires deliberate version updates.
 * Original timezone names and offsets are intentionally normalized to UTC.
 * SPEC-005 supports one local file only; partitioning and dataset cataloging remain unimplemented.
+
+---
+
+## DECISION-008 — Use Immutable Records and Exact Artifact Fingerprints
+
+Date: 2026-09-03
+Status: Accepted
+Related Spec: SPEC-006
+
+### Context
+
+Persisted Parquet files need stable research identities, portable locations, provenance, and a
+way to detect byte-level drift without conflating those separate concepts or introducing a
+database.
+
+### Options Considered
+
+1. Treat filenames or absolute paths as dataset identity.
+2. Store mutable records in SQLite or another catalog backend.
+3. Assign UUID-based IDs and persist immutable records in versioned JSON with relative paths and
+   SHA-256 fingerprints.
+
+### Decision
+
+Use immutable `DatasetRecord` values with generated `ds_<uuid4 hex>` IDs, catalog-relative POSIX
+storage paths, independent provenance text, exact incremental SHA-256 fingerprints, and atomic
+versioned UTF-8 JSON persistence. Registration streams summary metadata through the existing
+`ParquetMarketDataStore` boundary and does not invoke dataset-quality validation.
+
+### Reasoning
+
+Independent identity, location, integrity, and provenance fields make dataset references stable
+and auditable. Relative paths survive repository relocation, exact hashes expose artifact drift,
+and atomic JSON replacement provides a reviewable local catalog without another runtime
+dependency.
+
+### Consequences
+
+Positive:
+
+* Dataset IDs remain stable when repository paths move.
+* Exact artifact changes are detectable without modifying registered records.
+* Existing Parquet schema and domain validation remain centralized in the storage adapter.
+* Catalog files are human-readable, versioned, and atomically updated.
+
+Negative:
+
+* Registration scans Parquet rows and separately hashes every artifact byte.
+* The whole catalog is loaded and rewritten for each new registration.
+* Concurrent multi-process writers are not coordinated in version 1.
