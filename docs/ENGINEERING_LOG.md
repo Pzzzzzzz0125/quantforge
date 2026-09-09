@@ -574,3 +574,51 @@ Negative:
 * Registration scans Parquet rows and separately hashes every artifact byte.
 * The whole catalog is loaded and rewritten for each new registration.
 * Concurrent multi-process writers are not coordinated in version 1.
+
+---
+
+## DECISION-009 — Bound Features to Immutable Causal Windows
+
+Date: 2026-09-03
+Status: Accepted
+Related Spec: SPEC-007
+
+### Context
+
+QuantForge needs a reusable feature contract that makes lookback requirements and evaluation time
+explicit without giving feature implementations routine access to future dataset observations.
+
+### Options Considered
+
+1. Give features a complete dataset and current index.
+2. Introduce mutable streaming feature state before performance requirements are measured.
+3. Give pure feature implementations an immutable, strictly ordered, single-symbol historical
+   window ending at the evaluation timestamp.
+
+### Decision
+
+Define immutable `FeatureSpec`, `FeatureWindow`, and `FeatureValue` domain values plus a structural
+`Feature` protocol. Features receive only a causal `FeatureWindow`, declare a positive bar lookback,
+return `None` during warm-up, and return finite floats when available.
+
+### Reasoning
+
+Restricting normal feature input to observations through `window.as_of` reduces accidental
+look-ahead surface area. Explicit lookback metadata supports later orchestration, while immutable
+values make the boundary deterministic and suitable for future registry and cache designs without
+implementing those systems prematurely.
+
+### Consequences
+
+Positive:
+
+* The public computation contract cannot expose a future observation through a dataset index.
+* Single-symbol, strict timestamp ordering is enforced before feature computation.
+* Warm-up state is distinct from a numeric zero or a non-finite sentinel.
+* No runtime dependency or production indicator was introduced.
+
+Negative:
+
+* Callers must construct valid causal windows until a feature engine owns that responsibility.
+* Tuple-based windows may copy or slice history; performance has not yet been benchmarked.
+* Cross-sectional and stateful feature computation remain outside this initial contract.
