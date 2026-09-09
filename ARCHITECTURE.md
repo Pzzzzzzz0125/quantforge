@@ -225,6 +225,14 @@ SPEC-005 established `quantforge.data.parquet.ParquetMarketDataStore` as the can
 
 SPEC-006 established `quantforge.data.catalog.DatasetCatalog` as the local reproducibility index for Parquet artifacts. It assigns path-independent dataset IDs, stores immutable provenance and streaming summary metadata, persists portable catalog-relative paths, fingerprints exact artifact bytes, verifies integrity drift, and publishes versioned UTF-8 JSON atomically. Catalog registration does not imply dataset-quality approval.
 
-PyArrow remains the repository's only runtime dependency. No external provider, feature, strategy, portfolio, order, execution, or backtesting subsystem is implemented.
+SPEC-007 established `quantforge.features` as the base feature-domain boundary. Immutable feature
+metadata declares stable identity and explicit bar lookback, immutable single-symbol
+`FeatureWindow` values expose only strictly ordered observations through the evaluation time, and
+the structural `Feature` protocol accepts only that causal window. Available observations use
+finite `FeatureValue` floats; unavailable warm-up results use `None`.
+
+PyArrow remains the repository's only runtime dependency. No external provider, production
+financial feature, feature engine, strategy, portfolio, order, execution, or backtesting subsystem
+is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.
