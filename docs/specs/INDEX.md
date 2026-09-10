@@ -20,7 +20,7 @@
 | [SPEC-005](SPEC-005-parquet-storage-layer.md) | Parquet Storage Layer | Completed | SPEC-003, SPEC-004 |
 | [SPEC-006](SPEC-006-dataset-catalog.md) | Dataset Catalog | Completed | SPEC-005 |
 | [SPEC-007](SPEC-007-feature-interface.md) | Feature Interface | Completed | SPEC-002 |
-| SPEC-008 | Feature Registry & Cache | Planned | SPEC-007 |
+| [SPEC-008](SPEC-008-feature-registry-cache.md) | Feature Registry & Cache | Completed | SPEC-007 |
 | SPEC-009 | Strategy Interface | Planned | SPEC-007 |
 | SPEC-010 | Portfolio State & Accounting | Planned | SPEC-002 |
 | SPEC-011 | Order Domain Model | Planned | SPEC-010 |
