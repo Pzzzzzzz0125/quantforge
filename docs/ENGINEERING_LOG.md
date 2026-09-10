@@ -622,3 +622,51 @@ Negative:
 * Callers must construct valid causal windows until a feature engine owns that responsibility.
 * Tuple-based windows may copy or slice history; performance has not yet been benchmarked.
 * Cross-sectional and stateful feature computation remain outside this initial contract.
+
+---
+
+## DECISION-010 — Cache Exact Immutable Feature Inputs
+
+Date: 2026-09-09
+Status: Accepted
+Related Spec: SPEC-008
+
+### Context
+
+QuantForge needs process-local reuse of computed feature results without allowing different
+historical inputs at the same symbol and as-of timestamp to collide, and without confusing a
+warm-up result with an absent computation.
+
+### Options Considered
+
+1. Key results by feature name, symbol, and as-of timestamp.
+2. Add dataset IDs or serialized fingerprints to the feature-domain boundary.
+3. Key results by the complete immutable `FeatureSpec` and `FeatureWindow` values.
+
+### Decision
+
+Use exact `(FeatureSpec, FeatureWindow)` dictionary keys, return cached `None` as a real result,
+raise `KeyError` for misses, and reject conflicting results for an existing exact key. Keep the
+cache independent from the name-keyed `FeatureRegistry` and from feature computation.
+
+### Reasoning
+
+Symbol and as-of time do not identify the historical observations used by a feature. Full immutable
+window equality prevents unsafe reuse when any timestamp, OHLC value, or volume differs. Explicit
+miss behavior preserves the semantic distinction between not computed and computed but unavailable,
+while conflict rejection exposes nondeterministic results rather than silently replacing them.
+
+### Consequences
+
+Positive:
+
+* Historical input differences cannot collide merely because symbol and as-of match.
+* Separately constructed value-equal specs and windows reuse results naturally.
+* Warm-up results can be cached without ambiguity.
+* Registry, cache, and future orchestration responsibilities remain separate.
+
+Negative:
+
+* Hashing a `FeatureWindow` costs `O(w)` for `w` contained bars.
+* Memory grows with cached keys because eviction is not part of SPEC-008.
+* The cache is process-local and has no persistence or cross-process coordination.

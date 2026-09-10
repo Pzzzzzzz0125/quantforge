@@ -231,6 +231,12 @@ metadata declares stable identity and explicit bar lookback, immutable single-sy
 the structural `Feature` protocol accepts only that causal window. Available observations use
 finite `FeatureValue` floats; unavailable warm-up results use `None`.
 
+SPEC-008 added separate process-local `FeatureRegistry` and `FeatureCache` components. The registry
+maps canonical feature names to implementations without replacement and preserves registration
+order. The cache maps exact immutable `(FeatureSpec, FeatureWindow)` pairs to finite floats or
+cached `None`, rejects conflicting results for identical inputs, and does not perform feature
+computation. No feature engine or cache persistence exists.
+
 PyArrow remains the repository's only runtime dependency. No external provider, production
 financial feature, feature engine, strategy, portfolio, order, execution, or backtesting subsystem
 is implemented.
