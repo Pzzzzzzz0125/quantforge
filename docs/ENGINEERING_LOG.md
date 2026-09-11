@@ -670,3 +670,52 @@ Negative:
 * Hashing a `FeatureWindow` costs `O(w)` for `w` contained bars.
 * Memory grows with cached keys because eviction is not part of SPEC-008.
 * The cache is process-local and has no persistence or cross-process coordination.
+
+---
+
+## DECISION-011 — Separate Alpha Signals from Portfolio and Execution Decisions
+
+Date: 2026-09-09
+Status: Accepted
+Related Spec: SPEC-009
+
+### Context
+
+QuantForge needs strategies that can express multi-symbol research opinions without coupling alpha
+logic to portfolio state, sizing policy, order construction, or execution assumptions.
+
+### Options Considered
+
+1. Let strategies directly emit orders or target quantities using portfolio and execution state.
+2. Restrict every strategy evaluation to one symbol.
+3. Give strategies immutable multi-symbol feature values at one common instant and have them emit
+   dimensionless alpha signals only.
+
+### Decision
+
+Use immutable `StrategyContext` values containing available `FeatureValue` observations for one
+as-of instant, and immutable `Signal` values containing only strategy name, symbol, timestamp, and a
+finite float score. Keep portfolio sizing, order generation, and execution in downstream layers.
+
+### Reasoning
+
+Separating alpha opinion from implementation decisions lets the same strategy be evaluated under
+different capital allocation, risk, and execution policies. A common context timestamp preserves
+the causal feature boundary, while multi-symbol inputs support cross-sectional and relative-value
+research without exposing complete datasets or portfolio state.
+
+### Consequences
+
+Positive:
+
+* Strategy logic remains reusable across future portfolio and execution configurations.
+* All normal strategy inputs share one explicit causal instant.
+* Multi-symbol strategies fit the interface without weakening feature-window time safety.
+* Signals cannot encode quantities, prices, fills, commissions, or slippage.
+
+Negative:
+
+* A future orchestrator must check arbitrary strategy outputs for name, timestamp, and uniqueness
+  consistency.
+* Required-feature readiness and absent signals are responsibilities of future orchestration.
+* The protocol cannot prevent malicious implementations from accessing external future data.
