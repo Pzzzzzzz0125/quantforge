@@ -237,8 +237,14 @@ order. The cache maps exact immutable `(FeatureSpec, FeatureWindow)` pairs to fi
 cached `None`, rejects conflicting results for identical inputs, and does not perform feature
 computation. No feature engine or cache persistence exists.
 
+SPEC-009 established `quantforge.strategies` as the alpha-opinion boundary. Immutable
+`StrategyContext` values expose only available feature observations at one common as-of instant and
+may span multiple symbols. Strategies return immutable finite-score `Signal` values through a
+structural protocol; signals intentionally contain no sizing, portfolio, order, or execution data.
+A future orchestrator must validate arbitrary strategy output against its context and specification.
+
 PyArrow remains the repository's only runtime dependency. No external provider, production
-financial feature, feature engine, strategy, portfolio, order, execution, or backtesting subsystem
-is implemented.
+financial feature, feature engine, concrete trading strategy, portfolio, order, execution, or
+backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.
