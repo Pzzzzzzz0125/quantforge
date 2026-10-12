@@ -769,3 +769,54 @@ Negative:
 * Position tuples are rebuilt for updates and valuation lookups are initially linear.
 * Average-cost accounting does not preserve individual tax lots.
 * Buying power, margin, financing, corporate actions, and cash flows remain outside this layer.
+
+---
+
+## DECISION-013 — Separate Immutable Order Intent from Lifecycle and Fills
+
+Date: 2026-10-12
+Status: Accepted
+Related Spec: SPEC-011
+
+### Context
+
+QuantForge needs a deterministic order-domain object that communicates requested execution without
+prematurely coupling that request to lifecycle state, fill outcomes, execution costs, portfolio
+state, or identifier generation policy.
+
+### Options Considered
+
+1. Encode direction with signed requested quantities and include mutable lifecycle fields.
+2. Generate order identifiers inside the domain model and combine order intent with fill state.
+3. Use explicit BUY/SELL side, strictly positive quantity, caller-supplied identity, and separate
+   MARKET/LIMIT price invariants in an immutable intent object.
+
+### Decision
+
+Use immutable `Order` values with explicit side and positive integer quantity. Require callers to
+supply structurally valid IDs and timezone-aware submission timestamps. MARKET orders carry no
+limit price; LIMIT orders carry a finite positive Python float. Expose `signed_quantity` only as a
+bridge to signed downstream accounting, and exclude lifecycle, TIF, fills, costs, and portfolio
+state.
+
+### Reasoning
+
+Explicit direction avoids overloading the meaning of quantity, while the signed bridge prevents
+downstream accounting code from independently reinterpreting sides. Caller-owned IDs preserve
+determinism and leave global uniqueness to future orchestration. Keeping requested intent separate
+from later outcomes maintains the order/execution/accounting boundaries.
+
+### Consequences
+
+Positive:
+
+* Order equality and hashing are deterministic and include caller identity and submission time.
+* MARKET and LIMIT requests cannot enter contradictory price states.
+* BUY and SELL semantics map explicitly to signed accounting quantities.
+* The model remains independent of strategies, portfolios, data, and execution implementations.
+
+Negative:
+
+* The domain does not enforce global order-ID uniqueness.
+* Lifecycle, TIF, cancellation, amendment, and partial-fill state require later specifications.
+* No execution outcome or transaction-cost information is represented.
