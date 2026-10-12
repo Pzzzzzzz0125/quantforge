@@ -243,8 +243,14 @@ may span multiple symbols. Strategies return immutable finite-score `Signal` val
 structural protocol; signals intentionally contain no sizing, portfolio, order, or execution data.
 A future orchestrator must validate arbitrary strategy output against its context and specification.
 
+SPEC-010 established `quantforge.portfolio` as an immutable accounting boundary. Signed integer
+positions use average-cost accounting for long and short exposure, executed-trade facts produce new
+portfolio snapshots, fees remain separate from gross realized trading P&L, and mark-to-market
+valuation enforces cash, signed market-value, equity, and P&L reconciliation identities. Accounting
+does not decide fills, calculate commissions, or enforce portfolio risk and buying-power policy.
+
 PyArrow remains the repository's only runtime dependency. No external provider, production
-financial feature, feature engine, concrete trading strategy, portfolio, order, execution, or
-backtesting subsystem is implemented.
+financial feature, feature engine, concrete trading strategy, portfolio construction, order,
+execution, or backtesting subsystem is implemented.
 
 No financial subsystem should be considered implemented until its corresponding specification is completed and tested.

@@ -22,7 +22,7 @@
 | [SPEC-007](SPEC-007-feature-interface.md) | Feature Interface | Completed | SPEC-002 |
 | [SPEC-008](SPEC-008-feature-registry-cache.md) | Feature Registry & Cache | Completed | SPEC-007 |
 | [SPEC-009](SPEC-009-strategy-interface.md) | Strategy Interface | Completed | SPEC-007 |
-| SPEC-010 | Portfolio State & Accounting | Planned | SPEC-002 |
+| [SPEC-010](SPEC-010-portfolio-accounting.md) | Portfolio State & Accounting | Completed | SPEC-002 |
 | SPEC-011 | Order Domain Model | Planned | SPEC-010 |
 | SPEC-012 | Event System | Planned | SPEC-009, SPEC-011 |
 | SPEC-013 | Event-Driven Backtest Loop | Planned | SPEC-012 |
