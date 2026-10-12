@@ -719,3 +719,53 @@ Negative:
   consistency.
 * Required-feature readiness and absent signals are responsibilities of future orchestration.
 * The protocol cannot prevent malicious implementations from accessing external future data.
+
+---
+
+## DECISION-012 — Use Immutable Signed Average-Cost Portfolio Accounting
+
+Date: 2026-09-11
+Status: Accepted
+Related Spec: SPEC-010
+
+### Context
+
+QuantForge needs replayable portfolio accounting that supports both long and short exposure while
+remaining independent of signal sizing, order generation, fill simulation, commissions, and
+slippage.
+
+### Options Considered
+
+1. Use mutable positions with separate special-case paths for long and short portfolios.
+2. Introduce tax-lot accounting and order/execution objects immediately.
+3. Use immutable snapshots, signed integer quantities, and average-cost transitions driven by
+   already-executed trade facts.
+
+### Decision
+
+Represent positions and trades with signed quantities, account for positions using average cost,
+return a new immutable `PortfolioState` for every executed trade, and keep cumulative gross realized
+trading P&L separate from externally supplied transaction fees. Value open positions with explicit
+marks and enforce portfolio equity and P&L reconciliation identities.
+
+### Reasoning
+
+One signed transition rule handles long reductions, short covers, full closes, and both reversal
+directions without duplicating financial logic. Immutable snapshots support deterministic replay,
+while accepting executed facts keeps accounting from deciding execution or calculating commissions.
+Separating gross trading P&L from fees preserves later cost attribution.
+
+### Consequences
+
+Positive:
+
+* Long and short positions share one tested accounting model.
+* Prior states remain stable for replay and audit.
+* Reversals realize only closed exposure and price the residual at the current execution.
+* Equity and total P&L are explicitly reconciled at valuation time.
+
+Negative:
+
+* Position tuples are rebuilt for updates and valuation lookups are initially linear.
+* Average-cost accounting does not preserve individual tax lots.
+* Buying power, margin, financing, corporate actions, and cash flows remain outside this layer.
